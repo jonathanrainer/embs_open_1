@@ -7,6 +7,8 @@ public class SimpleSync {
 	
 	// Timer to allow the LED to Blink
 	private static Timer  	tblink;
+	// Timer to fire the blinking to periodically
+	private static Timer 	tfire;
 	// Duration of blinking (i.e how long the LED should remain on for)
 	private static long		BLINK_DURATION = 500l;
 	
@@ -22,6 +24,17 @@ public class SimpleSync {
 			}
 		});
 		tblink.setParam((byte) 0x01);
+		
+		//Create the simple timer to fire the blinking every t Seconds
+		
+		tfire = new Timer();
+		tfire.setCallback(new TimerEvent(null) 
+		{
+			@Override
+			public void invoke(byte arg0, long arg1) {
+
+			}
+		});
 	}
 	
 	public static void toggleLED(byte param, long time)
