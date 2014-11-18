@@ -17,12 +17,13 @@ public class SimpleSync {
 			@Override
 			public void invoke(byte param, long time) 
 			{
-				toggleLED((byte) 0x0, time);
+				SimpleSync.toggleLED(param, time);
 			}
 		});
+		tblink.setParam((byte) 0x01);
 	}
 	
-	private static void toggleLED(byte param, long time)
+	public static void toggleLED(byte param, long time)
 	{
 		if (LED.getState(param) == 1)
 		{
