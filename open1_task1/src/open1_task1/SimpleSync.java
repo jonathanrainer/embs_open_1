@@ -25,7 +25,7 @@ public class SimpleSync {
 				SimpleSync.toggleLED(param, time);
 			}
 		});
-		tblink.setParam((byte) 0x01);
+		tblink.setParam((byte) 0);
 		
 		//Create the simple timer to fire the blinking every t Seconds
 		
