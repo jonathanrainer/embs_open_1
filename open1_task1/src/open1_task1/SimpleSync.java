@@ -1,6 +1,7 @@
 package open1_task1;
 
 import com.ibm.saguaro.system.*;
+import com.ibm.saguaro.logger.*;
 
 public class SimpleSync {
 	
@@ -25,16 +26,25 @@ public class SimpleSync {
 	
 	public static void toggleLED(byte param, long time)
 	{
+		logMessage(Mote.DEBUG, csr.s2b("Toggle LED Called"));
 		if (LED.getState(param) == 1)
 		{
+			logMessage(Mote.DEBUG, csr.s2b("Turning LED Off"));
             LED.setState(param, (byte)0);
 		}
         else
         {
+        	logMessage(Mote.DEBUG, csr.s2b("Turning LED On"));
             LED.setState(param, (byte)1);
             tblink.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, 
             		BLINK_DURATION));
         }
+	}
+	
+	private static void logMessage(byte channel, byte[] message)
+	{
+		Logger.appendString(message);
+		Logger.flush(channel);
 	}
 	
 
