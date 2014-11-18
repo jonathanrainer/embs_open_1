@@ -21,6 +21,8 @@ public class SimpleSync {
 	private static byte		shtAddr = 0x69;
 	// Beacon Frame to Transmit
 	private static byte[] 	frame;
+	// Boolean to indicate firing
+	private static boolean	firing = false;
 	
 	static
 	{
@@ -96,6 +98,10 @@ public class SimpleSync {
 	public static int onReceive(int flags, byte[] data, int len, 
 			int info, long time)
 	{
+		if(data == null | firing)
+		{
+			return 0;
+		}
 		tFire.setAlarmBySpan(0l);
 		return 0;
 	}
@@ -103,6 +109,7 @@ public class SimpleSync {
 	public static void fire(byte param, long time)
 	{
 		logMessage(Mote.INFO, csr.s2b("Firing"));
+		firing = true;
 		radio.transmit(Device.ASAP|Radio.TXMODE_CCA, frame, 0, 7, 0);
 		toggleLED(param, time);
 		logMessage(Mote.INFO, csr.s2b("Setting Alarm to Wake Up in 2 Seconds"));
@@ -116,6 +123,7 @@ public class SimpleSync {
 		{
 			logMessage(Mote.INFO, csr.s2b("Turning LED Off"));
             LED.setState(param, (byte)0);
+            firing = false;
 		}
         else
         {
