@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE entity PUBLIC "-//UC Berkeley//DTD MoML 1//EN"
     "http://ptolemy.eecs.berkeley.edu/xml/dtd/MoML_1.dtd">
-<entity name="01model" class="ptolemy.actor.TypedCompositeActor">
+<entity name="SimpleSync" class="ptolemy.actor.TypedCompositeActor">
     <property name="_createdBy" class="ptolemy.kernel.attributes.VersionAttribute" value="6.0.2">
     </property>
     <property name="WirelessDirector" class="ptolemy.domains.wireless.kernel.WirelessDirector">
@@ -10,38 +10,54 @@
         <property name="_location" class="ptolemy.kernel.util.Location" value="{125, 70}">
         </property>
     </property>
-    <property name="_windowProperties" class="ptolemy.actor.gui.WindowPropertiesAttribute" value="{bounds={-8, -8, 1936, 1176}, maximized=true}">
+    <property name="_windowProperties" class="ptolemy.actor.gui.WindowPropertiesAttribute" value="{bounds={-8, -8, 1696, 1026}, maximized=true}">
     </property>
-    <property name="_vergilSize" class="ptolemy.actor.gui.SizeAttribute" value="[1713, 1060]">
+    <property name="_vergilSize" class="ptolemy.actor.gui.SizeAttribute" value="[1473, 910]">
     </property>
     <property name="_vergilZoomFactor" class="ptolemy.data.expr.ExpertParameter" value="1.0">
     </property>
-    <property name="_vergilCenter" class="ptolemy.data.expr.ExpertParameter" value="{856.5, 530.0}">
+    <property name="_vergilCenter" class="ptolemy.data.expr.ExpertParameter" value="{736.5, 455.0}">
     </property>
-    <entity name="SimpleSync" class="lsi.wsn.sync.SimpleSync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[425.0, 230.0]">
-        </property>
-    </entity>
-    <entity name="SimpleSync2" class="lsi.wsn.sync.SimpleSync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[300.0, 295.0]">
-        </property>
-    </entity>
     <entity name="Channel" class="ptolemy.domains.wireless.lib.LimitedRangeChannel">
         <property name="defaultProperties" class="ptolemy.data.expr.Parameter" value="{range = 400.0}">
         </property>
         <property name="_location" class="ptolemy.kernel.util.Location" value="{120, 255}">
         </property>
     </entity>
-    <entity name="SimpleSync3" class="lsi.wsn.sync.SimpleSync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[355.0, 455.0]">
+    <entity name="SimpleSync" class="open1_task2.SimpleSync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[325.0, 200.0]">
         </property>
     </entity>
-    <entity name="SimpleSync4" class="lsi.wsn.sync.SimpleSync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[565.0, 305.0]">
+    <entity name="SimpleSync2" class="open1_task2.SimpleSync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[325.0, 245.0]">
         </property>
     </entity>
-    <entity name="SimpleSync5" class="lsi.wsn.sync.SimpleSync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[490.0, 450.0]">
+    <entity name="SimpleSync3" class="open1_task2.SimpleSync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[325.0, 295.0]">
+        </property>
+    </entity>
+    <entity name="SimpleSync4" class="open1_task2.SimpleSync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[325.0, 340.0]">
+        </property>
+    </entity>
+    <entity name="SimpleSync5" class="open1_task2.SimpleSync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[325.0, 420.0]">
+        </property>
+    </entity>
+    <entity name="SimpleSync6" class="open1_task2.SimpleSync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[270.0, 420.0]">
+        </property>
+    </entity>
+    <entity name="SimpleSync7" class="open1_task2.SimpleSync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[325.0, 380.0]">
+        </property>
+    </entity>
+    <entity name="SimpleSync8" class="open1_task2.SimpleSync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[275.0, 200.0]">
+        </property>
+    </entity>
+    <entity name="SimpleSync9" class="open1_task2.SimpleSync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[375.0, 200.0]">
         </property>
     </entity>
 </entity>

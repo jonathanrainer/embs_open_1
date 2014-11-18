@@ -27,7 +27,7 @@ public class SimpleSync extends TypedAtomicActor
 	protected boolean stateLED = false; // state of the LED, off by default
 	protected double flashDuration = 0.5; // for how long LEDs are on, for visual effects only, not used by the synchronisation mechanism
 	protected double syncPeriod = 2.0; // synchronisation period
-	protected double delta = 0.072555; // delta factor
+	protected double delta = 0.0042; // delta factor
 
 	
 	// icon related
@@ -62,8 +62,6 @@ public class SimpleSync extends TypedAtomicActor
 	
 
 	public void fire() throws IllegalActionException{	
-		// turn off the LED
-		this.setLED(false);
 		
 		Time curTime = getDirector().getModelTime();
 
@@ -90,10 +88,10 @@ public class SimpleSync extends TypedAtomicActor
 			// schedule a firing in T time units
 			getDirector().fireAt(this, nextFire); 
 		}
-		
-			
-		
-		
+		else
+		{
+			this.setLED(false);
+		}
 	}
 
 	// change the filling colour of the icon
