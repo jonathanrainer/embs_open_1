@@ -11,16 +11,23 @@ import ptolemy.vergil.icon.EditorIcon;
 import ptolemy.vergil.kernel.attributes.EllipseAttribute;
 
 @SuppressWarnings("serial")
-public class SimpleSync extends TypedAtomicActor{
+public class SimpleSync extends TypedAtomicActor
+{
 
 	protected WirelessIOPort input; 
-	protected WirelessIOPort output; 
-	protected Time nextFire; // time of the next scheduled firing
+	protected WirelessIOPort output;
+	// time of the next scheduled firing (T_n in Pseudo)
+	protected Time nextFire; 
+	// time of the firing after nextFire (T_n+1 in Pseudo)
+	protected Time futureFire; 
+	// time of the most recent firing of the system
+	protected Time mostRecentFire;
 
 	protected String iconColor = "{0.0, 0.0, 0.0, 1.0}"; // black, LED off by default
 	protected boolean stateLED = false; // state of the LED, off by default
 	protected double flashDuration = 0.5; // for how long LEDs are on, for visual effects only, not used by the synchronisation mechanism
 	protected double syncPeriod = 2.0; // synchronisation period
+	protected double delta = 0.072555; // delta factor
 
 	
 	// icon related
@@ -29,25 +36,27 @@ public class SimpleSync extends TypedAtomicActor{
 
 	
 	public SimpleSync(CompositeEntity container, String name)
-	throws NameDuplicationException, IllegalActionException  {
-
+	throws NameDuplicationException, IllegalActionException  
+	{
 		super(container, name);
+		// Creates input and output channels
 		input = new WirelessIOPort(this, "input", true, false);
 		output = new WirelessIOPort(this, "output", false, true);
 		input.outsideChannel.setExpression("Channel");
     	output.outsideChannel.setExpression("Channel");
-
 		buildIcon();
-	
 	}
 	
 	
 	 public void initialize() throws IllegalActionException {
 		 
 		 super.initialize();
-		 
-		 // schedule the first firing randomly within the first second of the simulation
+		 // Set next firing equal to the firing period
 		 nextFire = getDirector().getModelTime().add(Math.random());
+		 // Set the firing after next equal to T_n + T
+		 futureFire = nextFire.add(syncPeriod);
+		 // Schedule a firing for T_n seconds later
+		 mostRecentFire = getDirector().getModelTime();
 		 getDirector().fireAt(this, nextFire);
 	 }
 	
@@ -58,19 +67,10 @@ public class SimpleSync extends TypedAtomicActor{
 		
 		Time curTime = getDirector().getModelTime();
 
-		if(input.hasToken(0)){  // if another node has transmitted
-			//discard token
+		if(input.hasToken(0))
+		{ 
 			input.get(0);
-
-			// turn on the LED
-			this.setLED(true);
-			
-			// schedule LED off
-			getDirector().fireAt(this, curTime.add(flashDuration)); 
-			
-			// schedule a firing in T time units
-			nextFire = curTime.add(syncPeriod);
-			getDirector().fireAt(this, nextFire); 
+			futureFire = futureFire.subtract(curTime.subtract(mostRecentFire).getDoubleValue() * delta);
 		}
 
 		else if(curTime.compareTo(nextFire)!=-1){ // time to fire: transmit and blink LED
@@ -83,8 +83,11 @@ public class SimpleSync extends TypedAtomicActor{
 			// schedule LED off
 			getDirector().fireAt(this, curTime.add(flashDuration)); 
 			
+			nextFire = futureFire;
+			futureFire = nextFire.add(syncPeriod);
+			mostRecentFire = curTime;
+			
 			// schedule a firing in T time units
-			nextFire = curTime.add(syncPeriod);
 			getDirector().fireAt(this, nextFire); 
 		}
 		
