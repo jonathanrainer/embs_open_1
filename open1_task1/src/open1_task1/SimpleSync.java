@@ -19,6 +19,8 @@ public class SimpleSync {
 	private static byte		panID = 0x42;
 	// Short Address given to this Mote
 	private static byte		shtAddr = 0x69;
+	// Beacon Frame to Transmit
+	private static byte[] 	frame;
 	
 	static
 	{
@@ -39,7 +41,16 @@ public class SimpleSync {
                 return  SimpleSync.onReceive(flags, data, len, info, time);
             }
         });
+        radio.startRx(Device.ASAP, 0, Time.currentTicks()+0x7FFFFFFF);
         
+        /**
+         * Create a frame to transmit 
+         */
+        frame = new byte[7];
+        frame[0] = Radio.FCF_BEACON;
+        frame[1] = Radio.FCA_SRC_SADDR;
+        Util.set16le(frame, 3, panID);
+        Util.set16le(frame, 5, shtAddr);
         
 		/**
 		 *  Create a simple timer so that the LED can blink, not just be left
@@ -85,12 +96,14 @@ public class SimpleSync {
 	public static int onReceive(int flags, byte[] data, int len, 
 			int info, long time)
 	{
+		tFire.setAlarmBySpan(0l);
 		return 0;
 	}
 	
 	public static void fire(byte param, long time)
 	{
 		logMessage(Mote.INFO, csr.s2b("Firing"));
+		radio.transmit(Device.ASAP|Radio.TXMODE_CCA, frame, 0, 7, 0);
 		toggleLED(param, time);
 		logMessage(Mote.INFO, csr.s2b("Setting Alarm to Wake Up in 2 Seconds"));
 		tFire.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, PERIOD));
