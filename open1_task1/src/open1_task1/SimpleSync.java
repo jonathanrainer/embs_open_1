@@ -11,6 +11,8 @@ public class SimpleSync {
 	private static Timer 	tfire;
 	// Duration of blinking (i.e how long the LED should remain on for)
 	private static long		BLINK_DURATION = 500l;
+	// Period of the flashing of the LED
+	private static long 	PERIOD = 2000l;
 	
 	static
 	{
@@ -31,10 +33,19 @@ public class SimpleSync {
 		tfire.setCallback(new TimerEvent(null) 
 		{
 			@Override
-			public void invoke(byte arg0, long arg1) {
-
+			public void invoke(byte param, long time) {
+				SimpleSync.fire(param, time);
 			}
 		});
+		tfire.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, PERIOD));
+	}
+	
+	public static void fire(byte param, long time)
+	{
+		logMessage(Mote.DEBUG, csr.s2b("Firing"));
+		toggleLED(param, time);
+		logMessage(Mote.DEBUG, csr.s2b("Setting Alarm to Wake Up in 2 Seconds"));
+		tfire.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, PERIOD));
 	}
 	
 	public static void toggleLED(byte param, long time)
@@ -60,6 +71,4 @@ public class SimpleSync {
 		Logger.flush(channel);
 	}
 	
-
-
 }
