@@ -26,7 +26,6 @@ public class SimpleSync extends TypedAtomicActor
 	protected boolean stateLED = false; // state of the LED, off by default
 	protected double flashDuration = 0.5; // for how long LEDs are on, for visual effects only, not used by the synchronisation mechanism
 	protected double syncPeriod = 2.0; // synchronisation period
-	// The answer to life... I think
 	protected double delta = 0.008;
 
 	
@@ -98,7 +97,7 @@ public class SimpleSync extends TypedAtomicActor
 	protected void setLED(boolean on) throws IllegalActionException {
 		stateLED=on;
 		if(on){
-			// Disco Stu likes these LEDs
+			// Disco Stu likes these LEDs.
 			// I'm sorry but this made it much more pretty
 			_circle.fillColor.setToken("{" + Math.random() + 
 					", " + Math.random() + ", " + Math.random() + 
