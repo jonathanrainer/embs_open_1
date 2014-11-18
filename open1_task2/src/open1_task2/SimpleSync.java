@@ -1,12 +1,11 @@
 package open1_task2;
 
-import ptolemy.actor.TypedAtomicActor;
+import ptolemy.actor.*;
 import ptolemy.actor.util.Time;
 import ptolemy.data.IntToken;
 import ptolemy.domains.wireless.kernel.WirelessIOPort;
-import ptolemy.kernel.CompositeEntity;
-import ptolemy.kernel.util.IllegalActionException;
-import ptolemy.kernel.util.NameDuplicationException;
+import ptolemy.kernel.*;
+import ptolemy.kernel.util.*;
 import ptolemy.vergil.icon.EditorIcon;
 import ptolemy.vergil.kernel.attributes.EllipseAttribute;
 
@@ -27,7 +26,8 @@ public class SimpleSync extends TypedAtomicActor
 	protected boolean stateLED = false; // state of the LED, off by default
 	protected double flashDuration = 0.5; // for how long LEDs are on, for visual effects only, not used by the synchronisation mechanism
 	protected double syncPeriod = 2.0; // synchronisation period
-	protected double delta = 0.0042; // delta factor
+	// The answer to life... I think
+	protected double delta = 0.008;
 
 	
 	// icon related
@@ -98,7 +98,11 @@ public class SimpleSync extends TypedAtomicActor
 	protected void setLED(boolean on) throws IllegalActionException {
 		stateLED=on;
 		if(on){
-			_circle.fillColor.setToken("{1.0, 0.0, 0.0, 1.0}"); // red
+			// Disco Stu likes these LEDs
+			// I'm sorry but this made it much more pretty
+			_circle.fillColor.setToken("{" + Math.random() + 
+					", " + Math.random() + ", " + Math.random() + 
+					", " + Math.random() + "}");
 		}
 		else{
 			_circle.fillColor.setToken("{0.0, 0.0, 0.0, 1.0}"); // black
