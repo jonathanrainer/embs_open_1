@@ -6,25 +6,47 @@ import com.ibm.saguaro.logger.*;
 public class SimpleSync {
 	
 	// Timer to allow the LED to Blink
-	private static Timer  	tblink;
+	private static Timer  	tBlink;
 	// Timer to fire the blinking to periodically
-	private static Timer 	tfire;
+	private static Timer 	tFire;
 	// Duration of blinking (i.e how long the LED should remain on for)
 	private static long		BLINK_DURATION = 500l;
 	// Period of the flashing of the LED
 	private static long 	PERIOD = 2000l;
+	// Radio for this Mote
+	private static Radio 	radio = new Radio();
+	// PAN ID for the PAN this more is on
+	private static byte		panID = 0x42;
+	// Short Address given to this Mote
+	private static byte		shtAddr = 0x69;
 	
 	static
 	{
-		
-		
-		
+		/**
+		 * Do some initial configuring of the Radio
+		 */
+        radio.open(Radio.DID, null, 0, 0);
+        radio.setPanId(panID, true);
+        radio.setShortAddr(shtAddr);
+        radio.setChannel((byte)6);
+        
+        /**
+         * Configure a Radio Callback so that on receiving a frame the Mote 
+         * reacts accordingly then set the radio to receive
+         */
+        radio.setRxHandler(new DevCallback(null){
+            public int invoke (int flags, byte[] data, int len, int info, long time) {
+                return  SimpleSync.onReceive(flags, data, len, info, time);
+            }
+        });
+        
+        
 		/**
 		 *  Create a simple timer so that the LED can blink, not just be left
 		 *  on.
 		 */
-		tblink = new Timer();
-		tblink.setCallback(new TimerEvent(null) 
+		tBlink = new Timer();
+		tBlink.setCallback(new TimerEvent(null) 
 		{
 			@Override
 			public void invoke(byte param, long time) 
@@ -32,21 +54,38 @@ public class SimpleSync {
 				SimpleSync.toggleLED(param, time);
 			}
 		});
-		tblink.setParam((byte) 0);
+		tBlink.setParam((byte) 0);
 		
 		/**
 		 * Create a second simple timer so that the Mote will fire every PERIOD
 		 * seconds.
 		 */
-		tfire = new Timer();
-		tfire.setCallback(new TimerEvent(null) 
+		tFire = new Timer();
+		tFire.setCallback(new TimerEvent(null) 
 		{
 			@Override
 			public void invoke(byte param, long time) {
 				SimpleSync.fire(param, time);
 			}
 		});
-		tfire.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, PERIOD));
+		tFire.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, PERIOD));
+		
+		/**
+		 * Make sure that once the Mote is deleted it gives up the radio rather
+		 * than causing errors later once it tries to be reclaimed by the Mote
+		 * and it finds it can't.
+		 */
+		Assembly.setSystemInfoCallback(new SystemInfo(null) {
+        	public int invoke(int type, int info) {
+        		return SimpleSync.onDelete(type, info);
+        		}
+        	});
+	}
+	
+	public static int onReceive(int flags, byte[] data, int len, 
+			int info, long time)
+	{
+		return 0;
 	}
 	
 	public static void fire(byte param, long time)
@@ -54,7 +93,7 @@ public class SimpleSync {
 		logMessage(Mote.INFO, csr.s2b("Firing"));
 		toggleLED(param, time);
 		logMessage(Mote.INFO, csr.s2b("Setting Alarm to Wake Up in 2 Seconds"));
-		tfire.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, PERIOD));
+		tFire.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, PERIOD));
 	}
 	
 	public static void toggleLED(byte param, long time)
@@ -69,7 +108,7 @@ public class SimpleSync {
         {
         	logMessage(Mote.INFO, csr.s2b("Turning LED On"));
             LED.setState(param, (byte)1);
-            tblink.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, 
+            tBlink.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, 
             		BLINK_DURATION));
         }
 	}
@@ -85,6 +124,24 @@ public class SimpleSync {
 	{
 		Logger.appendString(message);
 		Logger.flush(channel);
+	}
+	
+	/**
+	 * Small method to make sure the radio is relinquished by the Mote when it
+	 * gets deleted.
+	 * 
+	 * @param type	Information as to the type of event that caused the Mote to
+	 * be deleted.
+	 * @param info	Extra information as returned by the onDelete Event.
+	 * @return No information is returned, 0 indicates success
+	 */
+	private static int onDelete(int type, int info)
+	{
+		if(type == Assembly.SYSEV_DELETED)
+		{
+			radio.close();
+		}
+		return 0;
 	}
 	
 }
