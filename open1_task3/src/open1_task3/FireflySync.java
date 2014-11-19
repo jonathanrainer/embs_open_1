@@ -1,5 +1,9 @@
 package open1_task3;
 
+import java.util.spi.TimeZoneNameProvider;
+
+import org.omg.CORBA.TIMEOUT;
+
 import com.ibm.saguaro.system.*;
 import com.ibm.saguaro.logger.*;
 
@@ -16,13 +20,28 @@ public class FireflySync {
 	// Radio for this Mote
 	private static Radio 	radio = new Radio();
 	// PAN ID for the PAN this more is on
-	private static byte		panID = 0x42;
+	private static byte		PANID = 0x42;
 	// Short Address given to this Mote
-	private static byte		shtAddr = 0x69;
+	private static byte		SHTADDR = 0x69;
 	// Beacon Frame to Transmit
 	private static byte[] 	frame;
 	// Boolean to indicate firing
 	private static boolean	firing = false;
+	// time of the next scheduled firing (T_n in Pseudo) in milliseconds
+	private static long nextFire; 
+	// time of the firing after nextFire (T_n+1 in Pseudo) in milliseconds
+	private static long futureFire; 
+	// time of the most recent firing of the system
+	private static long mostRecentFire;
+	// delta value (fraction of how much to change the firing time by)
+	// NOTE: Due to MoteRunner not supporting doubles this is scaled
+	// by the DELTA_SCALING_FACTOR and then it's all cancelled out later. Just beware of 
+	// this when changing the Delta Factor.
+	private static long DELTA = 8l;
+	// Factor by which delta is scaled, i.e if it's 1000 and DELTA is
+	// 2 then the actual delta value is 0.002
+	private static long DELTA_SCALING_FACTOR = 1000l;
+	
 	
 	static
 	{
@@ -30,8 +49,8 @@ public class FireflySync {
 		 * Do some initial configuring of the Radio
 		 */
         radio.open(Radio.DID, null, 0, 0);
-        radio.setPanId(panID, true);
-        radio.setShortAddr(shtAddr);
+        radio.setPanId(PANID, true);
+        radio.setShortAddr(SHTADDR);
         radio.setChannel((byte)6);
         
         /**
@@ -51,8 +70,8 @@ public class FireflySync {
         frame = new byte[7];
         frame[0] = Radio.FCF_BEACON;
         frame[1] = Radio.FCA_SRC_SADDR;
-        Util.set16le(frame, 3, panID);
-        Util.set16le(frame, 5, shtAddr);
+        Util.set16le(frame, 3, PANID);
+        Util.set16le(frame, 5, SHTADDR);
         
 		/**
 		 *  Create a simple timer so that the LED can blink, not just be left
@@ -70,6 +89,20 @@ public class FireflySync {
 		tBlink.setParam((byte) 0);
 		
 		/**
+		 * Set up the time values 
+		 */
+		nextFire = Time.currentTime(Time.MILLISECS) + PERIOD;
+		Logger.appendString(csr.s2b("T_n is: "));
+		Logger.appendLong(nextFire);
+		futureFire = nextFire + PERIOD;
+		Logger.appendString(csr.s2b("T_n+1 is: "));
+		Logger.appendLong(futureFire);
+		mostRecentFire = Time.currentTime(Time.MILLISECS);
+		Logger.appendString(csr.s2b("mostRecentFire is: "));
+		Logger.appendLong(mostRecentFire);
+		Logger.flush(Mote.INFO);
+		
+		/**
 		 * Create a second simple timer so that the Mote will fire every PERIOD
 		 * seconds.
 		 */
@@ -81,7 +114,10 @@ public class FireflySync {
 				FireflySync.fire(param, time);
 			}
 		});
-		tFire.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, PERIOD));
+		tFire.setAlarmTime(Time.toTickSpan(Time.MILLISECS, nextFire));
+		
+		
+		
 		
 		/**
 		 * Make sure that once the Mote is deleted it gives up the radio rather
@@ -98,22 +134,39 @@ public class FireflySync {
 	public static int onReceive(int flags, byte[] data, int len, 
 			int info, long time)
 	{
-		if(data == null | firing)
+		logMessage(Mote.INFO,csr.s2b("Firing from another mote detected"));
+		if(data == null)
 		{
 			return 0;
 		}
-		tFire.setAlarmBySpan(0l);
+		// The scaling is applied to get around the fact that MoteRunner
+		// doesn't support doubles so it moves everything to being a long,
+		// then gets scaled at the end.
+		futureFire = 
+				(futureFire - ((Time.currentTime(Time.MILLISECS)
+						- mostRecentFire) * DELTA/DELTA_SCALING_FACTOR));
+		Logger.appendString(csr.s2b("T_n+1 is: "));
+		Logger.appendLong(futureFire);
+		Logger.flush(Mote.INFO);
 		return 0;
 	}
 	
 	public static void fire(byte param, long time)
 	{
 		logMessage(Mote.INFO, csr.s2b("Firing"));
-		firing = true;
+		//firing = true;
 		radio.transmit(Device.ASAP|Radio.TXMODE_CCA, frame, 0, 7, 0);
 		toggleLED(param, time);
-		logMessage(Mote.INFO, csr.s2b("Setting Alarm to Wake Up in 2 Seconds"));
-		tFire.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, PERIOD));
+		nextFire = futureFire;
+		Logger.appendString(csr.s2b("T_n is: "));
+		Logger.appendLong(nextFire);
+		Logger.flush(Mote.INFO);
+		futureFire = nextFire + PERIOD;
+		Logger.appendString(csr.s2b("T_n+1 is: "));
+		Logger.appendLong(nextFire);
+		Logger.flush(Mote.INFO);
+		mostRecentFire = Time.currentTime(Time.MILLISECS);
+		tFire.setAlarmTime(Time.toTickSpan(Time.MILLISECS,  nextFire));
 	}
 	
 	public static void toggleLED(byte param, long time)
