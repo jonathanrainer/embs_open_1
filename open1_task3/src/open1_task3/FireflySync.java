@@ -1,9 +1,5 @@
 package open1_task3;
 
-import java.util.spi.TimeZoneNameProvider;
-
-import org.omg.CORBA.TIMEOUT;
-
 import com.ibm.saguaro.system.*;
 import com.ibm.saguaro.logger.*;
 
@@ -37,10 +33,16 @@ public class FireflySync {
 	// NOTE: Due to MoteRunner not supporting doubles this is scaled
 	// by the DELTA_SCALING_FACTOR and then it's all cancelled out later. Just beware of 
 	// this when changing the Delta Factor.
-	private static long DELTA = 8l;
+	private static long DELTA = 85l;
 	// Factor by which delta is scaled, i.e if it's 1000 and DELTA is
 	// 2 then the actual delta value is 0.002
-	private static long DELTA_SCALING_FACTOR = 1000l;
+	private static long DELTA_SCALING_FACTOR = 10000l;
+	
+	//TEST CODE
+	private static long iteration_counter_init = -5;
+	private static long iteration_counter;
+	private static long e = 27_182_818l;
+	private static long e_scale = 100_000_000l;
 	
 	
 	static
@@ -145,6 +147,7 @@ public class FireflySync {
 		futureFire = 
 				(futureFire - ((Time.currentTime(Time.MILLISECS)
 						- mostRecentFire) * DELTA/DELTA_SCALING_FACTOR));
+		iteration_counter = iteration_counter + 1;
 		Logger.appendString(csr.s2b("T_n+1 is: "));
 		Logger.appendLong(futureFire);
 		Logger.flush(Mote.INFO);
@@ -154,8 +157,8 @@ public class FireflySync {
 	public static void fire(byte param, long time)
 	{
 		logMessage(Mote.INFO, csr.s2b("Firing"));
-		//firing = true;
-		radio.transmit(Device.ASAP|Radio.TXMODE_CCA, frame, 0, 7, 0);
+		iteration_counter = iteration_counter_init;
+		radio.transmit(Device.ASAP, frame, 0, 7, 0);
 		toggleLED(param, time);
 		nextFire = futureFire;
 		Logger.appendString(csr.s2b("T_n is: "));
@@ -176,7 +179,6 @@ public class FireflySync {
 		{
 			logMessage(Mote.INFO, csr.s2b("Turning LED Off"));
             LED.setState(param, (byte)0);
-            firing = false;
 		}
         else
         {
