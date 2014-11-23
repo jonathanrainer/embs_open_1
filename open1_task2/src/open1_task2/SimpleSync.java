@@ -35,7 +35,7 @@ public class SimpleSync extends TypedAtomicActor
 	protected boolean stateLED = false; // state of the LED, off by default
 	protected double flashDuration = 0.5; // for how long LEDs are on, for visual effects only, not used by the synchronisation mechanism
 	protected double syncPeriod = 2.0; // synchronisation period
-	protected double delta = 0.013;
+	protected double delta = 0.04;
 	
 	// Data structure to store incoming events
 	protected LinkedList<Time> events = new LinkedList<Time>();
