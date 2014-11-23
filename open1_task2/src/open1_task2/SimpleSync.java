@@ -87,13 +87,18 @@ public class SimpleSync extends TypedAtomicActor
 			// schedule LED off
 			getDirector().fireAt(this, curTime.add(flashDuration)); 
 			
+			System.out.println("######################");
+			System.out.println("Future Fire Before Adjust: " + futureFire.getDoubleValue());
 			Iterator<Time> evIt = events.iterator();
 			while(evIt.hasNext())
 			{
 				Time eventTime = evIt.next();
 				Time timeSinceFour = eventTime.subtract(mostRecentFire);
+				
 				futureFire = futureFire.subtract(timeSinceFour.getDoubleValue() * delta(eventTime, nextFire));
 			}
+			System.out.println("Future Fire After Adjust: " + futureFire.getDoubleValue());
+			System.out.println("######################");
 			events.clear();
 			
 			nextFire = futureFire;
@@ -141,7 +146,14 @@ public class SimpleSync extends TypedAtomicActor
 	{
 		//return delta;
 		//return delta* (curTime.getDoubleValue()/nextFire.getDoubleValue());
-		return delta * (1- ((curTime.subtract(nextFire).getDoubleValue()/syncPeriod)));
+		double var_delta = delta * (1 - (nextFire.subtract(curTime).getDoubleValue()/syncPeriod));
+		System.out.println("");
+		System.out.println("Event Time: " + curTime.getDoubleValue());
+		System.out.println("Next Fire Time: " + nextFire.getDoubleValue());
+		System.out.println("Delta: " + delta);
+		System.out.println("Var_Delta: " + var_delta);
+		System.out.println("");
+		return var_delta;
 	}
 
 	
