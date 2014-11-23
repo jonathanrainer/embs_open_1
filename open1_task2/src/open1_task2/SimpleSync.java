@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import ptolemy.actor.*;
+import ptolemy.actor.gui.ConfigurationEffigy;
 import ptolemy.actor.process.ProcessThread;
 import ptolemy.actor.util.Time;
 import ptolemy.data.IntToken;
@@ -138,9 +139,9 @@ public class SimpleSync extends TypedAtomicActor
 	
 	protected double delta(Time curTime, Time nextFire)
 	{
-		return delta;
-		//return (delta * (nextFire.subtract(curTime).getDoubleValue()/syncPeriod));
-		//return curTime.add(4*delta*Math.sqrt(curTime.getDoubleValue()).add4*Math.pow(delta, 2));
+		//return delta;
+		//return delta* (curTime.getDoubleValue()/nextFire.getDoubleValue());
+		return delta * (1- ((curTime.subtract(nextFire).getDoubleValue()/syncPeriod)));
 	}
 
 	
