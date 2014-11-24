@@ -33,10 +33,10 @@ public class FireflySync {
 	// NOTE: Due to MoteRunner not supporting doubles this is scaled
 	// by the DELTA_SCALING_FACTOR and then it's all cancelled out later. Just beware of 
 	// this when changing the Delta Factor.
-	private static long DELTA = 10l;
+	private static long DELTA = 125l;
 	// Factor by which delta is scaled, i.e if it's 1000 and DELTA is
 	// 2 then the actual delta value is 0.002
-	private static long DELTA_SCALING_FACTOR = 1000l;
+	private static long DELTA_SCALING_FACTOR = 10000l;
 	private static long PERIOD_SCALING_FACTOR = 10000l;
 	
 	
