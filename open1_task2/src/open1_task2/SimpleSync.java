@@ -29,7 +29,7 @@ public class SimpleSync extends TypedAtomicActor
 	protected boolean stateLED = false; // state of the LED, off by default
 	protected double flashDuration = 0.5; // for how long LEDs are on, for visual effects only, not used by the synchronisation mechanism
 	protected double syncPeriod = 2.0; // synchronisation period
-	protected double base_delta = 0.08;
+	protected double base_delta = 0.03;
 	protected double delta = base_delta;
 	protected double cumulative_ev_time = 0.0;
 	protected int event_num = 0;
@@ -152,7 +152,7 @@ public class SimpleSync extends TypedAtomicActor
 			avg_out_sync = 0.0;
 		}
 		System.out.println("Average Out Of Sync:" + avg_out_sync);
-		double new_delta = base_delta*(Math.exp(-Math.pow(avg_out_sync-(syncPeriod/2),2)*100));
+		double new_delta = base_delta*(Math.exp(-Math.pow(avg_out_sync-(syncPeriod/2),2)*10));
 		System.out.println("New Delta: " + new_delta);
 		return new_delta;
 	}
