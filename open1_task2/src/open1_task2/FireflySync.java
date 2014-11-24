@@ -11,7 +11,7 @@ import ptolemy.vergil.icon.EditorIcon;
 import ptolemy.vergil.kernel.attributes.EllipseAttribute;
 
 @SuppressWarnings("serial")
-public class SimpleSync extends TypedAtomicActor
+public class FireflySync extends TypedAtomicActor
 {
 
 	protected WirelessIOPort input; 
@@ -27,14 +27,14 @@ public class SimpleSync extends TypedAtomicActor
 	protected boolean stateLED = false; // state of the LED, off by default
 	protected double flashDuration = 0.5; // for how long LEDs are on, for visual effects only, not used by the synchronisation mechanism
 	protected double syncPeriod = 2.0; // synchronisation period
-	protected double delta = 0.009;
+	protected double delta = 0.006;
 	
 	// icon related
 	protected EllipseAttribute _circle; 
 	protected EditorIcon node_icon;
 
 	
-	public SimpleSync(CompositeEntity container, String name)
+	public FireflySync(CompositeEntity container, String name)
 	throws NameDuplicationException, IllegalActionException  
 	{
 		super(container, name);
