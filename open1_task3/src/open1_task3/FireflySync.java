@@ -1,5 +1,7 @@
 package open1_task3;
 
+import org.omg.CORBA.TIMEOUT;
+
 import com.ibm.saguaro.system.*;
 import com.ibm.saguaro.logger.*;
 
@@ -21,8 +23,6 @@ public class FireflySync {
 	private static byte		SHTADDR = 0x69;
 	// Beacon Frame to Transmit
 	private static byte[] 	frame;
-	// Boolean to indicate firing
-	private static boolean	firing = false;
 	// time of the next scheduled firing (T_n in Pseudo) in milliseconds
 	private static long nextFire; 
 	// time of the firing after nextFire (T_n+1 in Pseudo) in milliseconds
@@ -33,16 +33,11 @@ public class FireflySync {
 	// NOTE: Due to MoteRunner not supporting doubles this is scaled
 	// by the DELTA_SCALING_FACTOR and then it's all cancelled out later. Just beware of 
 	// this when changing the Delta Factor.
-	private static long DELTA = 78l;
+	private static long DELTA = 10l;
 	// Factor by which delta is scaled, i.e if it's 1000 and DELTA is
 	// 2 then the actual delta value is 0.002
-	private static long DELTA_SCALING_FACTOR = 10000l;
-	
-	//TEST CODE
-	private static long iteration_counter_init = -5;
-	private static long iteration_counter;
-	private static long e = 27_182_818l;
-	private static long e_scale = 100_000_000l;
+	private static long DELTA_SCALING_FACTOR = 1000l;
+	private static long PERIOD_SCALING_FACTOR = 10000l;
 	
 	
 	static
@@ -94,15 +89,8 @@ public class FireflySync {
 		 * Set up the time values 
 		 */
 		nextFire = Time.currentTime(Time.MILLISECS) + PERIOD;
-		Logger.appendString(csr.s2b("T_n is: "));
-		Logger.appendLong(nextFire);
 		futureFire = nextFire + PERIOD;
-		Logger.appendString(csr.s2b("T_n+1 is: "));
-		Logger.appendLong(futureFire);
 		mostRecentFire = Time.currentTime(Time.MILLISECS);
-		Logger.appendString(csr.s2b("mostRecentFire is: "));
-		Logger.appendLong(mostRecentFire);
-		Logger.flush(Mote.INFO);
 		
 		/**
 		 * Create a second simple timer so that the Mote will fire every PERIOD
@@ -136,7 +124,6 @@ public class FireflySync {
 	public static int onReceive(int flags, byte[] data, int len, 
 			int info, long time)
 	{
-		logMessage(Mote.INFO,csr.s2b("Firing from another mote detected"));
 		if(data == null)
 		{
 			return 0;
@@ -146,43 +133,42 @@ public class FireflySync {
 		// then gets scaled at the end.
 		futureFire = 
 				(futureFire - ((Time.currentTime(Time.MILLISECS)
-						- mostRecentFire) * DELTA/DELTA_SCALING_FACTOR));
-		iteration_counter = iteration_counter + 1;
-		Logger.appendString(csr.s2b("T_n+1 is: "));
-		Logger.appendLong(futureFire);
-		Logger.flush(Mote.INFO);
+						- mostRecentFire) * delta(Time.currentTime(Time.MILLISECS), futureFire))/DELTA_SCALING_FACTOR);
 		return 0;
+	}
+	
+	private static long delta(long curTime, long futureFire)
+	{
+		
+		long var_delta = (DELTA * ((futureFire - curTime)*PERIOD_SCALING_FACTOR/PERIOD))/PERIOD_SCALING_FACTOR;
+		Logger.appendString(csr.s2b("CurTime: "));
+		Logger.appendLong(curTime);
+		Logger.appendString(csr.s2b("Future Fire: "));
+		Logger.appendLong(futureFire);
+		Logger.appendString(csr.s2b("Delta: "));
+		Logger.appendLong(var_delta);
+		Logger.flush(Mote.INFO);
+		return var_delta;
 	}
 	
 	public static void fire(byte param, long time)
 	{
-		logMessage(Mote.INFO, csr.s2b("Firing"));
-		iteration_counter = iteration_counter_init;
 		radio.transmit(Device.ASAP, frame, 0, 7, 0);
 		toggleLED(param, time);
 		nextFire = futureFire;
-		Logger.appendString(csr.s2b("T_n is: "));
-		Logger.appendLong(nextFire);
-		Logger.flush(Mote.INFO);
 		futureFire = nextFire + PERIOD;
-		Logger.appendString(csr.s2b("T_n+1 is: "));
-		Logger.appendLong(nextFire);
-		Logger.flush(Mote.INFO);
 		mostRecentFire = Time.currentTime(Time.MILLISECS);
 		tFire.setAlarmTime(Time.toTickSpan(Time.MILLISECS,  nextFire));
 	}
 	
 	public static void toggleLED(byte param, long time)
 	{
-		logMessage(Mote.INFO, csr.s2b("Toggle LED Called"));
 		if (LED.getState(param) == 1)
 		{
-			logMessage(Mote.INFO, csr.s2b("Turning LED Off"));
             LED.setState(param, (byte)0);
 		}
         else
         {
-        	logMessage(Mote.INFO, csr.s2b("Turning LED On"));
             LED.setState(param, (byte)1);
             tBlink.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, 
             		BLINK_DURATION));
