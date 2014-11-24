@@ -1,20 +1,14 @@
 package open1_task2;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
-import javax.swing.JApplet;
-import javax.swing.text.html.MinimalHTMLWriter;
-
-import ptolemy.actor.*;
-import ptolemy.actor.gui.ConfigurationEffigy;
-import ptolemy.actor.process.ProcessThread;
+import ptolemy.actor.TypedAtomicActor;
 import ptolemy.actor.util.Time;
 import ptolemy.data.IntToken;
 import ptolemy.domains.wireless.kernel.WirelessIOPort;
-import ptolemy.kernel.*;
-import ptolemy.kernel.util.*;
-import ptolemy.vergil.actor.DocBuilder;
+import ptolemy.kernel.CompositeEntity;
+import ptolemy.kernel.util.IllegalActionException;
+import ptolemy.kernel.util.NameDuplicationException;
 import ptolemy.vergil.icon.EditorIcon;
 import ptolemy.vergil.kernel.attributes.EllipseAttribute;
 
@@ -35,7 +29,10 @@ public class SimpleSync extends TypedAtomicActor
 	protected boolean stateLED = false; // state of the LED, off by default
 	protected double flashDuration = 0.5; // for how long LEDs are on, for visual effects only, not used by the synchronisation mechanism
 	protected double syncPeriod = 2.0; // synchronisation period
-	protected double delta = 0.08;
+	protected double base_delta = 0.08;
+	protected double delta = base_delta;
+	protected double cumulative_ev_time = 0.0;
+	protected int event_num = 0;
 	
 	// Data structure to store incoming events
 	protected LinkedList<Time> events = new LinkedList<Time>();
@@ -78,7 +75,16 @@ public class SimpleSync extends TypedAtomicActor
 		if(input.hasToken(0))
 		{ 
 			input.get(0);
-			events.add(curTime);
+			if(curTime.subtract(mostRecentFire).getDoubleValue() > syncPeriod/2)
+			{
+				cumulative_ev_time += futureFire.subtract(curTime).getDoubleValue();
+			}
+			else 
+			{
+				cumulative_ev_time += curTime.subtract(mostRecentFire).getDoubleValue();
+			}
+			event_num++;
+			futureFire = futureFire.subtract(curTime.subtract(mostRecentFire).getDoubleValue() * delta);
 		}
 
 		else if(curTime.compareTo(nextFire)!=-1){ // time to fire: transmit and blink LED
@@ -91,18 +97,11 @@ public class SimpleSync extends TypedAtomicActor
 			// schedule LED off
 			getDirector().fireAt(this, curTime.add(flashDuration)); 
 			
-			Iterator<Time> evIt = events.iterator();
-			while(evIt.hasNext())
-			{
-				Time eventTime = evIt.next();
-				Time timeSinceFour = eventTime.subtract(mostRecentFire);
-				futureFire = futureFire.subtract(timeSinceFour.getDoubleValue() * delta(eventTime, futureFire, events.size()));
-			}
-			events.clear();
-			
 			nextFire = futureFire;
 			futureFire = nextFire.add(syncPeriod);
 			mostRecentFire = curTime;
+			
+			delta = calculate_new_delta(cumulative_ev_time, event_num);
 			
 			// schedule a firing in T time units
 			if(nextFire.compareTo(getDirector().getModelTime()) < 0)
@@ -145,10 +144,16 @@ public class SimpleSync extends TypedAtomicActor
 		node_icon.setPersistent(false);
 	}
 	
-	protected double delta(Time curTime, Time futureFire, int reading_number)
+	protected double calculate_new_delta(double cumulative_time, int event_num)
 	{
-		double var_delta = delta * (((futureFire.subtract(curTime).getDoubleValue()/syncPeriod))/reading_number);
-		System.out.println(var_delta);
-		return var_delta;
-	}	
+		double avg_out_sync = cumulative_time/event_num;
+		if(Double.isNaN(avg_out_sync))
+		{
+			avg_out_sync = 0.0;
+		}
+		System.out.println("Average Out Of Sync:" + avg_out_sync);
+		double new_delta = base_delta*(Math.exp(-Math.pow(avg_out_sync-(syncPeriod/2),2)*100));
+		System.out.println("New Delta: " + new_delta);
+		return new_delta;
+	}
 }
