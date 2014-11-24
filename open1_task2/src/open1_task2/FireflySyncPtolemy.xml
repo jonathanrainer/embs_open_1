@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE entity PUBLIC "-//UC Berkeley//DTD MoML 1//EN"
     "http://ptolemy.eecs.berkeley.edu/xml/dtd/MoML_1.dtd">
-<entity name="SimpleSync" class="ptolemy.actor.TypedCompositeActor">
+<entity name="FireflySyncPtolemy" class="ptolemy.actor.TypedCompositeActor">
     <property name="_createdBy" class="ptolemy.kernel.attributes.VersionAttribute" value="6.0.2">
     </property>
     <property name="WirelessDirector" class="ptolemy.domains.wireless.kernel.WirelessDirector">
@@ -24,40 +24,44 @@
         <property name="_location" class="ptolemy.kernel.util.Location" value="{120, 255}">
         </property>
     </entity>
-    <entity name="SimpleSync" class="open1_task2.SimpleSync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[325.0, 200.0]">
+    <entity name="FireflySync" class="open1_task2.FireflySync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[270.0, 265.0]">
         </property>
     </entity>
-    <entity name="SimpleSync2" class="open1_task2.SimpleSync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[325.0, 245.0]">
+    <entity name="FireflySync2" class="open1_task2.FireflySync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[245.0, 305.0]">
         </property>
     </entity>
-    <entity name="SimpleSync3" class="open1_task2.SimpleSync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[325.0, 295.0]">
+    <entity name="FireflySync3" class="open1_task2.FireflySync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[555.0, 260.0]">
         </property>
     </entity>
-    <entity name="SimpleSync4" class="open1_task2.SimpleSync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[325.0, 340.0]">
+    <entity name="FireflySync4" class="open1_task2.FireflySync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[460.0, 320.0]">
         </property>
     </entity>
-    <entity name="SimpleSync5" class="open1_task2.SimpleSync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[325.0, 420.0]">
+    <entity name="FireflySync5" class="open1_task2.FireflySync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[310.0, 390.0]">
         </property>
     </entity>
-    <entity name="SimpleSync6" class="open1_task2.SimpleSync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[270.0, 420.0]">
+    <entity name="FireflySync6" class="open1_task2.FireflySync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[505.0, 410.0]">
         </property>
     </entity>
-    <entity name="SimpleSync7" class="open1_task2.SimpleSync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[325.0, 380.0]">
+    <entity name="FireflySync7" class="open1_task2.FireflySync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[400.0, 230.0]">
         </property>
     </entity>
-    <entity name="SimpleSync8" class="open1_task2.SimpleSync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[275.0, 200.0]">
+    <entity name="FireflySync8" class="open1_task2.FireflySync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[300.0, 205.0]">
         </property>
     </entity>
-    <entity name="SimpleSync9" class="open1_task2.SimpleSync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[375.0, 200.0]">
+    <entity name="FireflySync9" class="open1_task2.FireflySync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[370.0, 305.0]">
+        </property>
+    </entity>
+    <entity name="FireflySync10" class="open1_task2.FireflySync">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[495.0, 170.0]">
         </property>
     </entity>
 </entity>
