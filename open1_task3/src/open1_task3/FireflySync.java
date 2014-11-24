@@ -1,7 +1,5 @@
 package open1_task3;
 
-import org.omg.CORBA.TIMEOUT;
-
 import com.ibm.saguaro.system.*;
 import com.ibm.saguaro.logger.*;
 
