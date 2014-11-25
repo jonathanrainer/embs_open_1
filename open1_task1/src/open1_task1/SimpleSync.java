@@ -33,6 +33,10 @@ public class SimpleSync {
 		frame = createBeaconFrame();
 		setUpTimers();
 		setUpSystemCallbacks();
+		/**
+		 * Put the radio into receive mode so that it can start syncing up
+		 * no matter when the other mote is activated.
+		 */
 		radio.startRx(Device.ASAP, 0, Time.currentTicks()+0x7FFFFFFF);
 	}
 	
