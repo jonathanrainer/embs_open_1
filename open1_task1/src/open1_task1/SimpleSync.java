@@ -20,6 +20,8 @@ public class SimpleSync {
 	private static byte		shtAddr = 0x69;
 	// Beacon Frame to Transmit
 	private static byte[] 	frame;
+	// LED to Light (0x00 - Yellow, 0x01 - Green, 0x02 - Red)
+	private static byte 	LED_Colour	= 0x02;
 	
 	/**
 	 * Constructor for the Mote when its instantiated.
@@ -87,7 +89,7 @@ public class SimpleSync {
 		 * Set a Parameter into the Timer such the LED we want to use can 
 		 * be easily selected
 		 */
-		tBlink.setParam((byte) 0);
+		tBlink.setParam(LED_Colour);
 		
 		/**
 		 * Create a second simple timer so that the Mote will fire every PERIOD
@@ -102,6 +104,7 @@ public class SimpleSync {
 			}
 		});
 		tFire.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, PERIOD));
+		tFire.setParam(LED_Colour);
 	}
 	
 	private static void setUpSystemCallbacks()
