@@ -1,5 +1,6 @@
 package open1_task1;
 
+import com.ibm.saguaro.logger.Logger;
 import com.ibm.saguaro.system.*;
 
 public class SimpleSync {
@@ -26,11 +27,13 @@ public class SimpleSync {
 	 */
 	static
 	{
+		Logger.appendString(csr.s2b("Radio Set Up"));
 		setUpRadio();
 		// Create a generic beacon frame to be transmitted each frame.
 		frame = createBeaconFrame();
 		setUpTimers();
 		setUpSystemCallbacks();
+		radio.startRx(Device.ASAP, 0, Time.currentTicks()+0x7FFFFFFF);
 	}
 	
 	/**
