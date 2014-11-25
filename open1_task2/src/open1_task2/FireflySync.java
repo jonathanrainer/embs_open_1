@@ -131,8 +131,6 @@ public class FireflySync extends TypedAtomicActor
 	{
 		double diff = (futureFire.subtract(currentTime)).getDoubleValue()/syncPeriod;
 		double new_delta = base_delta*(Math.exp(-Math.pow(diff-(syncPeriod/2),2)));
-		//return new_delta;
-		System.out.println("New Delta, " + new_delta);
 		return new_delta;
 	}
 }
