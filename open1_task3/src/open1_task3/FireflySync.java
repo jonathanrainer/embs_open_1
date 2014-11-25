@@ -1,5 +1,7 @@
 package open1_task3;
 
+import java.util.Random;
+
 import com.ibm.saguaro.system.*;
 import com.ibm.saguaro.logger.*;
 
@@ -31,7 +33,7 @@ public class FireflySync {
 	// NOTE: Due to MoteRunner not supporting doubles this is scaled
 	// by the DELTA_SCALING_FACTOR and then it's all cancelled out later. Just beware of 
 	// this when changing the Delta Factor.
-	private static long DELTA = 125l;
+	private static long DELTA = 175l;
 	// Factor by which delta is scaled, i.e if it's 1000 and DELTA is
 	// 2 then the actual delta value is 0.002
 	private static long DELTA_SCALING_FACTOR = 10000l;
@@ -139,13 +141,6 @@ public class FireflySync {
 	{
 		
 		long var_delta = (DELTA * ((futureFire - curTime)*PERIOD_SCALING_FACTOR/PERIOD))/PERIOD_SCALING_FACTOR;
-		Logger.appendString(csr.s2b("CurTime: "));
-		Logger.appendLong(curTime);
-		Logger.appendString(csr.s2b("Future Fire: "));
-		Logger.appendLong(futureFire);
-		Logger.appendString(csr.s2b("Delta: "));
-		Logger.appendLong(var_delta);
-		Logger.flush(Mote.INFO);
 		return var_delta;
 	}
 	
@@ -156,7 +151,8 @@ public class FireflySync {
 		nextFire = futureFire;
 		futureFire = nextFire + PERIOD;
 		mostRecentFire = Time.currentTime(Time.MILLISECS);
-		tFire.setAlarmTime(Time.toTickSpan(Time.MILLISECS,  nextFire));
+		long backoff = Util.rand16() % 25;
+		tFire.setAlarmTime(Time.toTickSpan(Time.MILLISECS,  nextFire+backoff));
 	}
 	
 	public static void toggleLED(byte param, long time)
