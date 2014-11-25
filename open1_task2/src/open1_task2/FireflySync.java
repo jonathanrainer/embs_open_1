@@ -27,7 +27,8 @@ public class FireflySync extends TypedAtomicActor
 	protected boolean stateLED = false; // state of the LED, off by default
 	protected double flashDuration = 0.5; // for how long LEDs are on, for visual effects only, not used by the synchronisation mechanism
 	protected double syncPeriod = 2.0; // synchronisation period
-	protected double delta = 0.006;
+	protected double base_delta = 0.007;
+	protected double delta = base_delta;
 	
 	// icon related
 	protected EllipseAttribute _circle; 
@@ -126,9 +127,12 @@ public class FireflySync extends TypedAtomicActor
 		node_icon.setPersistent(false);
 	}
 	
-	protected double delta(Time curTime, Time futureFire)
+	protected double delta(Time currentTime, Time futureFire)
 	{
-		double var_delta = delta * (((futureFire.subtract(curTime).getDoubleValue()/syncPeriod)));
-		return var_delta;
-	}	
+		double diff = (futureFire.subtract(currentTime)).getDoubleValue()/syncPeriod;
+		double new_delta = base_delta*(Math.exp(-Math.pow(diff-(syncPeriod/2),2)));
+		return new_delta;
+	}
 }
+
+
