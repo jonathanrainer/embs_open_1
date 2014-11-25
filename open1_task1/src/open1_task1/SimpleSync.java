@@ -1,30 +1,42 @@
 package open1_task1;
 
 import com.ibm.saguaro.system.*;
-import com.ibm.saguaro.logger.*;
 
 public class SimpleSync {
 	
 	// Timer to allow the LED to Blink
 	private static Timer  	tBlink;
-	// Timer to fire the blinking to periodically
+	// Timer to fire the blinking and transmitting to occur periodically
 	private static Timer 	tFire;
-	// Duration of blinking (i.e how long the LED should remain on for)
+	// Duration of blinking (how long should LED stay on for, stored in ms)
 	private static long		BLINK_DURATION = 500l;
-	// Period of the flashing of the LED
+	// Period of the flashing and transmitting (stored in ms)
 	private static long 	PERIOD = 2000l;
-	// Radio for this Mote
+	// Claim the Radio object for this mote
 	private static Radio 	radio = new Radio();
-	// PAN ID for the PAN this more is on
+	// PAN ID for the PAN this Mote is on
 	private static byte		panID = 0x42;
 	// Short Address given to this Mote
 	private static byte		shtAddr = 0x69;
 	// Beacon Frame to Transmit
 	private static byte[] 	frame;
-	// Boolean to indicate firing
-	private static boolean	firing = false;
 	
+	/**
+	 * Constructor for the Mote when its instantiated.
+	 */
 	static
+	{
+		setUpRadio();
+		// Create a generic beacon frame to be transmitted each frame.
+		frame = createBeaconFrame();
+		setUpTimers();
+		setUpSystemCallbacks();
+	}
+	
+	/**
+	 * Perform operations to set up the Radio and 
+	 */
+	private static void setUpRadio()
 	{
 		/**
 		 * Do some initial configuring of the Radio
@@ -36,27 +48,26 @@ public class SimpleSync {
         
         /**
          * Configure a Radio Callback so that on receiving a frame the Mote 
-         * reacts accordingly then set the radio to receive
+         * reacts accordingly then set the radio to receive. The long time
+         * for the radio to listen gets round problems where if its introduced
+         * first into the network it can miss the first pulse and thus even get
+         * into a tentative sync with the other mote.
          */
         radio.setRxHandler(new DevCallback(null){
             public int invoke (int flags, byte[] data, int len, int info, long time) {
                 return  SimpleSync.onReceive(flags, data, len, info, time);
             }
         });
-        radio.startRx(Device.ASAP, 0, Time.currentTicks()+0x7FFFFFFF);
-        
-        /**
-         * Create a frame to transmit 
-         */
-        frame = new byte[7];
-        frame[0] = Radio.FCF_BEACON;
-        frame[1] = Radio.FCA_SRC_SADDR;
-        Util.set16le(frame, 3, panID);
-        Util.set16le(frame, 5, shtAddr);
-        
+	}
+	
+	/**
+	 * Create and initialise the Timers that will govern the operation of the
+	 * System.
+	 */
+	private static void setUpTimers()
+	{
 		/**
-		 *  Create a simple timer so that the LED can blink, not just be left
-		 *  on.
+		 *  Create a simple timer so that the LED can blink.
 		 */
 		tBlink = new Timer();
 		tBlink.setCallback(new TimerEvent(null) 
@@ -67,11 +78,15 @@ public class SimpleSync {
 				SimpleSync.toggleLED(param, time);
 			}
 		});
+		/**
+		 * Set a Parameter into the Timer such the LED we want to use can 
+		 * be easily selected
+		 */
 		tBlink.setParam((byte) 0);
 		
 		/**
 		 * Create a second simple timer so that the Mote will fire every PERIOD
-		 * seconds.
+		 * milliseconds then set that timer to fire PERIOD milliseconds later.
 		 */
 		tFire = new Timer();
 		tFire.setCallback(new TimerEvent(null) 
@@ -82,7 +97,10 @@ public class SimpleSync {
 			}
 		});
 		tFire.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, PERIOD));
-		
+	}
+	
+	private static void setUpSystemCallbacks()
+	{
 		/**
 		 * Make sure that once the Mote is deleted it gives up the radio rather
 		 * than causing errors later once it tries to be reclaimed by the Mote
@@ -95,56 +113,90 @@ public class SimpleSync {
         	});
 	}
 	
+	/**
+     * Create a beacon frame to transmit 
+     */
+	private static byte[] createBeaconFrame()
+	{
+        byte[] new_frame = new byte[7];
+        new_frame[0] = Radio.FCF_BEACON;
+        new_frame[1] = Radio.FCA_SRC_SADDR;
+        Util.set16le(new_frame, 3, panID);
+        Util.set16le(new_frame, 5, shtAddr);
+        return new_frame;
+	}
+	
+	/**
+	 * The method called upon receipt of a frame of data. Simply overwrite
+	 * the value in the tFire timer with a 0 such that it fires immediately.
+	 * as per the protocol.
+	 */
 	public static int onReceive(int flags, byte[] data, int len, 
 			int info, long time)
 	{
-		if(data == null | firing)
+		/** 
+		 * If a null frame is received then it's the end of the reception 
+		 * period so don't do anything. 
+		 */
+		if(data == null)
 		{
 			return 0;
 		}
+		// Otherwise set the Mote to fire immediately as per the protocol.
 		tFire.setAlarmBySpan(0l);
 		return 0;
 	}
 	
+	/**
+	 * Simple fire method, just wake up, stop the Radio, transmit the beacon frame,
+	 * blink the LED, and then set the alarm to do it again. 
+	 * @param param
+	 * @param time
+	 */
 	public static void fire(byte param, long time)
 	{
-		logMessage(Mote.INFO, csr.s2b("Firing"));
-		firing = true;
+		/**
+		 * Stop the radio from receiving any frames such that you can't get
+		 * into a situation where the LEDs are flip-flopping back and forth
+		 * with each one firing the one before it. Also helps with lowering
+		 * power consumption.
+		 */
+		radio.stopRx();
+		// Transmit the required beacon frame and blink the LED.
 		radio.transmit(Device.ASAP|Radio.TXMODE_CCA, frame, 0, 7, 0);
 		toggleLED(param, time);
-		logMessage(Mote.INFO, csr.s2b("Setting Alarm to Wake Up in 2 Seconds"));
+		// Reset the alarm to wake up and transmit again in PERIOD seconds.
 		tFire.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, PERIOD));
 	}
 	
+	/**
+	 * Simple LED that turns the LED on if it's off and off if it's on. Also
+	 * deals with turning on the Radio reception again after it was turned off.
+	 * @param param
+	 * @param time
+	 */
 	public static void toggleLED(byte param, long time)
 	{
-		logMessage(Mote.INFO, csr.s2b("Toggle LED Called"));
 		if (LED.getState(param) == 1)
 		{
-			logMessage(Mote.INFO, csr.s2b("Turning LED Off"));
+			/**
+			 * When the LED has been turned off start the radio receiving again,
+			 * to avoid the flip-flop problem.
+			 */
             LED.setState(param, (byte)0);
-            firing = false;
+            radio.startRx(Device.ASAP, Time.currentTicks(), 
+            		Time.currentTicks()+(Time.toTickSpan(Time.MILLISECS,PERIOD)));
 		}
         else
         {
-        	logMessage(Mote.INFO, csr.s2b("Turning LED On"));
+        	/**
+        	 * If the LED is not on turn it on, then set the alarm to turn it 
+        	 * off after the BLINK_DURATION has elapsed.
+        	 */
             LED.setState(param, (byte)1);
             tBlink.setAlarmBySpan(Time.toTickSpan(Time.MILLISECS, 
             		BLINK_DURATION));
         }
-	}
-	
-	/**
-	 * Simple method to avoid having loads of the same line repeated all over
-	 * the code.
-	 * @param channel	The Channel you want to send the message on 
-	 * @param message	The message you want to Log, 
-	 * make sure it's a byte array.
-	 */
-	private static void logMessage(byte channel, byte[] message)
-	{
-		Logger.appendString(message);
-		Logger.flush(channel);
 	}
 	
 	/**
