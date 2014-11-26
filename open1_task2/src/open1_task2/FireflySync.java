@@ -37,7 +37,7 @@ public class FireflySync extends TypedAtomicActor
 	 * bound on the values it can give. In addition there is a starting point
 	 * for delta in the first iteration before there's any observed data.
 	 */
-	protected double baseDelta = 0.007; // a baseline delta function to give 
+	protected double baseDelta = 0.009; // a baseline delta function to give 
 	/**
 	 * A value to store the value of Delta being used for the current iteration,
 	 * start it off 
@@ -181,7 +181,7 @@ public class FireflySync extends TypedAtomicActor
 		 *  Work out the difference as a fraction of the Period so you know
 		 *  how many periods you are out of sync with the mote that fired.
 		 */
-		double diff = (futureFire.subtract(currentTime)).getDoubleValue()/syncPeriod;
+		double diff = (futureFire.subtract(currentTime)).getDoubleValue() % (syncPeriod/2);
 		/**
 		 * Put this value into a Gaussian Function of the form:
 		 * 
