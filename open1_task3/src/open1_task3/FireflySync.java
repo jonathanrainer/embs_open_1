@@ -47,7 +47,7 @@ public class FireflySync {
 	static
 	{
 		setUpRadio();
-		// Start the radio transmitting such that any pulses can be recieved.
+		// Start the radio transmitting such that any pulses can be received.
         radio.startRx(Device.ASAP, 0, Time.currentTicks()+0x7FFFFFFF);
         /**
          * Create a generic frame to transmit as the contents of the frame are
