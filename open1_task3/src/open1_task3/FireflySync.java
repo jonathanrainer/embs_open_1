@@ -1,7 +1,5 @@
 package open1_task3;
 
-import java.util.Random;
-
 import com.ibm.saguaro.system.*;
 import com.ibm.saguaro.logger.*;
 
@@ -33,7 +31,7 @@ public class FireflySync {
 	// NOTE: Due to MoteRunner not supporting doubles this is scaled
 	// by the DELTA_SCALING_FACTOR and then it's all cancelled out later. Just beware of 
 	// this when changing the Delta Factor.
-	private static long DELTA = 175l;
+	private static long DELTA = 225l;
 	// Factor by which delta is scaled, i.e if it's 1000 and DELTA is
 	// 2 then the actual delta value is 0.002
 	private static long DELTA_SCALING_FACTOR = 10000l;
@@ -41,6 +39,21 @@ public class FireflySync {
 	
 	
 	static
+	{
+		setUpRadio();
+        radio.startRx(Device.ASAP, 0, Time.currentTicks()+0x7FFFFFFF);
+        frame = createFrame();
+        /**
+		 * Set up the time values 
+		 */
+        nextFire = Time.currentTime(Time.MILLISECS) + PERIOD;
+		futureFire = nextFire + PERIOD;
+		mostRecentFire = Time.currentTime(Time.MILLISECS);
+        setUpTimers();
+        setUpSystemCallbacks();
+	}
+	
+	private static void setUpRadio()
 	{
 		/**
 		 * Do some initial configuring of the Radio
@@ -59,17 +72,23 @@ public class FireflySync {
                 return  FireflySync.onReceive(flags, data, len, info, time);
             }
         });
-        radio.startRx(Device.ASAP, 0, Time.currentTicks()+0x7FFFFFFF);
-        
-        /**
+	}
+	
+	private static byte[] createFrame()
+	{
+		/**
          * Create a frame to transmit 
          */
-        frame = new byte[7];
-        frame[0] = Radio.FCF_BEACON;
-        frame[1] = Radio.FCA_SRC_SADDR;
-        Util.set16le(frame, 3, PANID);
-        Util.set16le(frame, 5, SHTADDR);
-        
+		byte[] new_frame = new byte[7];
+        new_frame[0] = Radio.FCF_BEACON;
+        new_frame[1] = Radio.FCA_SRC_SADDR;
+        Util.set16le(new_frame, 3, PANID);
+        Util.set16le(new_frame, 5, SHTADDR);
+        return new_frame;
+	}
+	
+	private static void setUpTimers()
+	{
 		/**
 		 *  Create a simple timer so that the LED can blink, not just be left
 		 *  on.
@@ -86,13 +105,6 @@ public class FireflySync {
 		tBlink.setParam((byte) 0);
 		
 		/**
-		 * Set up the time values 
-		 */
-		nextFire = Time.currentTime(Time.MILLISECS) + PERIOD;
-		futureFire = nextFire + PERIOD;
-		mostRecentFire = Time.currentTime(Time.MILLISECS);
-		
-		/**
 		 * Create a second simple timer so that the Mote will fire every PERIOD
 		 * seconds.
 		 */
@@ -105,10 +117,10 @@ public class FireflySync {
 			}
 		});
 		tFire.setAlarmTime(Time.toTickSpan(Time.MILLISECS, nextFire));
-		
-		
-		
-		
+	}
+	
+	private static void setUpSystemCallbacks()
+	{
 		/**
 		 * Make sure that once the Mote is deleted it gives up the radio rather
 		 * than causing errors later once it tries to be reclaimed by the Mote
@@ -169,18 +181,6 @@ public class FireflySync {
         }
 	}
 	
-	/**
-	 * Simple method to avoid having loads of the same line repeated all over
-	 * the code.
-	 * @param channel	The Channel you want to send the message on 
-	 * @param message	The message you want to Log, 
-	 * make sure it's a byte array.
-	 */
-	private static void logMessage(byte channel, byte[] message)
-	{
-		Logger.appendString(message);
-		Logger.flush(channel);
-	}
 	
 	/**
 	 * Small method to make sure the radio is relinquished by the Mote when it
