@@ -37,7 +37,7 @@ public class FireflySync extends TypedAtomicActor
 	 * bound on the values it can give. In addition there is a starting point
 	 * for delta in the first iteration before there's any observed data.
 	 */
-	protected double baseDelta = 0.009; // a baseline delta function to give 
+	protected double baseDelta = 0.012; // a baseline delta function to give 
 	/**
 	 * A value to store the value of Delta being used for the current iteration,
 	 * start it off 
