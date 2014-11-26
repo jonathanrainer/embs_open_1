@@ -12,8 +12,10 @@ public class FireflySync {
 	private static long		BLINK_DURATION = 500l;
 	// Period of the flashing of the LED
 	private static long 	PERIOD = 2000l;
-	// Scaling factor for the period when it's used in the denominator of the 
-	// fraction later on.
+	/**
+	 *  Scaling factor for the period when it's used in the denominator of the 
+	 *  fraction later on.
+	 */
 	private static long 	PERIOD_SCALING_FACTOR = 10000l;
 	// Radio for this Mote
 	private static Radio 	radio = new Radio();
@@ -29,15 +31,18 @@ public class FireflySync {
 	private static long 	futureFire; 
 	// time of the most recent firing of the system
 	private static long 	mostRecentFire;
-	// delta value (fraction of how much to change the firing time by)
-	// NOTE: Due to MoteRunner not supporting doubles this is scaled
-	// by the DELTA_SCALING_FACTOR and then it's all cancelled out later. Just beware of 
-	// this when changing the Delta Factor.
+	/**
+	 *  delta value (fraction of how much to change the firing time by)
+	 *  NOTE: Due to MoteRunner not supporting doubles this is scaled
+	 *  by the DELTA_SCALING_FACTOR and then it's all cancelled out later.Just 
+	 *  beware of this when changing the Delta Factor.
+	 */
 	private static long 	DELTA = 175l;
-	// Factor by which delta is scaled, i.e if it's 1000 and DELTA is
-	// 2 then the actual delta value is 0.002
+	/**
+	 *  Factor by which delta is scaled, i.e if it's 1000 and DELTA is
+	 *  2 then the actual delta value is 0.002	 
+	 */
 	private static long 	DELTA_SCALING_FACTOR = 10000l;
-	
 	
 	static
 	{
@@ -192,6 +197,11 @@ public class FireflySync {
 		return var_delta;
 	}
 	
+	/**
+	 * Method called once T_n seconds have passed.
+	 * @param param	Any parameter passed from the Timer
+	 * @param time	The time at which this method was called.
+	 */
 	public static void fire(byte param, long time)
 	{
 		// Transmit the beacon frame and toggle the LED
