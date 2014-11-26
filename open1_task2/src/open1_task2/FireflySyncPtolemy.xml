@@ -10,13 +10,13 @@
         <property name="_location" class="ptolemy.kernel.util.Location" value="{125, 70}">
         </property>
     </property>
-    <property name="_windowProperties" class="ptolemy.actor.gui.WindowPropertiesAttribute" value="{bounds={-8, -8, 1696, 1026}, maximized=true}">
+    <property name="_windowProperties" class="ptolemy.actor.gui.WindowPropertiesAttribute" value="{bounds={33, 362, 1696, 1021}, maximized=false}">
     </property>
-    <property name="_vergilSize" class="ptolemy.actor.gui.SizeAttribute" value="[1473, 910]">
+    <property name="_vergilSize" class="ptolemy.actor.gui.SizeAttribute" value="[1473, 905]">
     </property>
     <property name="_vergilZoomFactor" class="ptolemy.data.expr.ExpertParameter" value="1.0">
     </property>
-    <property name="_vergilCenter" class="ptolemy.data.expr.ExpertParameter" value="{736.5, 455.0}">
+    <property name="_vergilCenter" class="ptolemy.data.expr.ExpertParameter" value="{736.5, 452.5}">
     </property>
     <entity name="Channel" class="ptolemy.domains.wireless.lib.LimitedRangeChannel">
         <property name="defaultProperties" class="ptolemy.data.expr.Parameter" value="{range = 400.0}">
@@ -24,44 +24,44 @@
         <property name="_location" class="ptolemy.kernel.util.Location" value="{120, 255}">
         </property>
     </entity>
-    <entity name="FireflySync" class="open1_task2.FireflySync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[290.0, 170.0]">
+    <entity name="FireflySyncP" class="open1_task2.FireflySyncP">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[335.0, 280.0]">
         </property>
     </entity>
-    <entity name="FireflySync2" class="open1_task2.FireflySync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[250.0, 245.0]">
+    <entity name="FireflySyncP2" class="open1_task2.FireflySyncP">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[300.0, 335.0]">
         </property>
     </entity>
-    <entity name="FireflySync3" class="open1_task2.FireflySync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[250.0, 170.0]">
+    <entity name="FireflySyncP3" class="open1_task2.FireflySyncP">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[430.0, 330.0]">
         </property>
     </entity>
-    <entity name="FireflySync4" class="open1_task2.FireflySync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[250.0, 270.0]">
+    <entity name="FireflySyncP4" class="open1_task2.FireflySyncP">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[465.0, 370.0]">
         </property>
     </entity>
-    <entity name="FireflySync5" class="open1_task2.FireflySync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[280.0, 220.0]">
+    <entity name="FireflySyncP6" class="open1_task2.FireflySyncP">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[380.0, 385.0]">
         </property>
     </entity>
-    <entity name="FireflySync7" class="open1_task2.FireflySync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[250.0, 220.0]">
+    <entity name="FireflySyncP5" class="open1_task2.FireflySyncP">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[310.0, 375.0]">
         </property>
     </entity>
-    <entity name="FireflySync8" class="open1_task2.FireflySync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[250.0, 295.0]">
+    <entity name="FireflySyncP7" class="open1_task2.FireflySyncP">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[480.0, 255.0]">
         </property>
     </entity>
-    <entity name="FireflySync9" class="open1_task2.FireflySync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[315.0, 220.0]">
+    <entity name="FireflySyncP8" class="open1_task2.FireflySyncP">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[410.0, 250.0]">
         </property>
     </entity>
-    <entity name="FireflySync10" class="open1_task2.FireflySync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[315.0, 190.0]">
+    <entity name="FireflySyncP9" class="open1_task2.FireflySyncP">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[425.0, 185.0]">
         </property>
     </entity>
-    <entity name="FireflySync6" class="open1_task2.FireflySync">
-        <property name="_location" class="ptolemy.kernel.util.Location" value="[250.0, 195.0]">
+    <entity name="FireflySyncP10" class="open1_task2.FireflySyncP">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="[330.0, 225.0]">
         </property>
     </entity>
 </entity>

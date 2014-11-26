@@ -2,7 +2,7 @@ package open1_task3;
 
 import com.ibm.saguaro.system.*;
 
-public class FireflySync {
+public class FireflySyncM {
 	
 	// Timer to allow the LED to Blink
 	private static Timer  	tBlink;
@@ -78,7 +78,7 @@ public class FireflySync {
          */
         radio.setRxHandler(new DevCallback(null){
             public int invoke (int flags, byte[] data, int len, int info, long time) {
-                return  FireflySync.onReceive(flags, data, len, info, time);
+                return  FireflySyncM.onReceive(flags, data, len, info, time);
             }
         });
 	}
@@ -108,7 +108,7 @@ public class FireflySync {
 		{
 			@Override
 			public void invoke(byte param, long time) {
-				FireflySync.fire(param, time);
+				FireflySyncM.fire(param, time);
 			}
 		});
 		tFire.setAlarmTime(Time.toTickSpan(Time.MILLISECS, nextFire));
@@ -122,7 +122,7 @@ public class FireflySync {
 			@Override
 			public void invoke(byte param, long time) 
 			{
-				FireflySync.toggleLED(param, time);
+				FireflySyncM.toggleLED(param, time);
 			}
 		});
 		// Set a parameter for which LED to turn on 
@@ -138,7 +138,7 @@ public class FireflySync {
 		 */
 		Assembly.setSystemInfoCallback(new SystemInfo(null) {
         	public int invoke(int type, int info) {
-        		return FireflySync.onDelete(type, info);
+        		return FireflySyncM.onDelete(type, info);
         		}
         	});
 	}

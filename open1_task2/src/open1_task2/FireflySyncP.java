@@ -11,7 +11,7 @@ import ptolemy.vergil.icon.EditorIcon;
 import ptolemy.vergil.kernel.attributes.EllipseAttribute;
 
 @SuppressWarnings("serial")
-public class FireflySync extends TypedAtomicActor
+public class FireflySyncP extends TypedAtomicActor
 {
 
 	// Port Setup
@@ -49,7 +49,7 @@ public class FireflySync extends TypedAtomicActor
 	protected EditorIcon node_icon;
 
 	
-	public FireflySync(CompositeEntity container, String name)
+	public FireflySyncP(CompositeEntity container, String name)
 	throws NameDuplicationException, IllegalActionException  
 	{
 		super(container, name);
