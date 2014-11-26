@@ -37,7 +37,7 @@ public class FireflySync {
 	 *  by the DELTA_SCALING_FACTOR and then it's all cancelled out later.Just 
 	 *  beware of this when changing the Delta Factor.
 	 */
-	private static long 	DELTA = 125l;
+	private static long 	DELTA = 225l;
 	/**
 	 *  Factor by which delta is scaled, i.e if it's 1000 and DELTA is
 	 *  2 then the actual delta value is 0.002	 
@@ -191,8 +191,8 @@ public class FireflySync {
 		 * the motes are out of sync rather than an absolute value of time which
 		 * would be harder to account for. 
 		 */
-		long var_delta = (DELTA * ((futureFire - curTime)*PERIOD_SCALING_FACTOR/PERIOD))/DELTA_SCALING_FACTOR;
-		return var_delta;
+		long var_delta = (DELTA * ((futureFire - curTime) % (PERIOD/2))*((2*PERIOD_SCALING_FACTOR)/PERIOD)/DELTA_SCALING_FACTOR);
+		return DELTA;
 	}
 	
 	/**
