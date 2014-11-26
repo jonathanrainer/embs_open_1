@@ -47,11 +47,14 @@ public class FireflySync {
 	static
 	{
 		setUpRadio();
+		// Start the radio transmitting such that any pulses can be recieved.
         radio.startRx(Device.ASAP, 0, Time.currentTicks()+0x7FFFFFFF);
-        frame = createFrame();
         /**
-		 * Set up the time values 
-		 */
+         * Create a generic frame to transmit as the contents of the frame are
+         * not really that important.
+         */
+        frame = createFrame();
+        // Set up the time values 
         nextFire = Time.currentTime(Time.MILLISECS) + PERIOD;
 		futureFire = nextFire + PERIOD;
 		mostRecentFire = Time.currentTime(Time.MILLISECS);
@@ -82,14 +85,15 @@ public class FireflySync {
 	
 	private static byte[] createFrame()
 	{
-		/**
-         * Create a frame to transmit 
-         */
+		// Create a frame to transmit 
 		byte[] new_frame = new byte[7];
+		// Set flags within the beacon frame
         new_frame[0] = Radio.FCF_BEACON;
         new_frame[1] = Radio.FCA_SRC_SADDR;
+        // Set the data in the frame required by the flags set above.
         Util.set16le(new_frame, 3, PANID);
         Util.set16le(new_frame, 5, SHTADDR);
+        // Return the frame that's been created.
         return new_frame;
 	}
 	
@@ -121,6 +125,7 @@ public class FireflySync {
 				FireflySync.toggleLED(param, time);
 			}
 		});
+		// Set a parameter for which LED to turn on 
 		tBlink.setParam((byte) 0);
 	}
 	
@@ -136,24 +141,6 @@ public class FireflySync {
         		return FireflySync.onDelete(type, info);
         		}
         	});
-	}
-	
-	/**
-     * Create a beacon frame to transmit 
-     */
-	private static byte[] createBeaconFrame()
-	{
-        byte[] new_frame = new byte[7];
-        //Set the beacon frame flag fields.
-        new_frame[0] = Radio.FCF_BEACON;
-        new_frame[1] = Radio.FCA_SRC_SADDR;
-        /**
-         * Include the PANID to transmit to and the Short Address of this 
-         * Mote as per the flags above.
-         */
-        Util.set16le(new_frame, 3,PANID);
-        Util.set16le(new_frame, 5, SHTADDR);
-        return new_frame;
 	}
 	
 	public static int onReceive(int flags, byte[] data, int len, 
@@ -180,8 +167,9 @@ public class FireflySync {
 		 * the function delta()
 		 */
 		futureFire = 
-				(futureFire - ((Time.currentTime(Time.MILLISECS)
-						- mostRecentFire) * delta(Time.currentTime(Time.MILLISECS), futureFire))/DELTA_SCALING_FACTOR);
+				(futureFire - ((Time.currentTime(Time.MILLISECS)-mostRecentFire) * 
+						delta(Time.currentTime(Time.MILLISECS), futureFire))
+						/DELTA_SCALING_FACTOR);
 		return 0;
 	}
 	
