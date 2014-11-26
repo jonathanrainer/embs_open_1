@@ -35,7 +35,10 @@ public class SimpleSync {
 		setUpSystemCallbacks();
 		/**
 		 * Put the radio into receive mode so that it can start syncing up
-		 * no matter when the other mote is activated.
+		 * no matter when the other mote is activated. The long time
+         * for the radio to listen gets round problems where if its introduced
+         * first into the network it can miss the first pulse and thus even get
+         * into a tentative sync with the other mote.
 		 */
 		radio.startRx(Device.ASAP, 0, Time.currentTicks()+0x7FFFFFFF);
 	}
@@ -55,10 +58,7 @@ public class SimpleSync {
         
         /**
          * Configure a Radio Callback so that on receiving a frame the Mote 
-         * reacts accordingly then set the radio to receive. The long time
-         * for the radio to listen gets round problems where if its introduced
-         * first into the network it can miss the first pulse and thus even get
-         * into a tentative sync with the other mote.
+         * reacts accordingly. 
          */
         radio.setRxHandler(new DevCallback(null){
             public int invoke (int flags, byte[] data, int len, int info, long time) {
@@ -180,8 +180,9 @@ public class SimpleSync {
 	/**
 	 * Simple LED that turns the LED on if it's off and off if it's on. Also
 	 * deals with turning on the Radio reception again after it was turned off.
-	 * @param param
-	 * @param time
+	 * 
+	 * @param param 	The LED to turn on or off
+	 * @param time		The time at which this event was fired.
 	 */
 	public static void toggleLED(byte param, long time)
 	{
